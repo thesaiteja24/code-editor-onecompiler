@@ -1,41 +1,36 @@
-import React, { useState } from "react";
-import { ThemeProvider, CssBaseline } from "@mui/material";
-import NabBar from "./components/NavBar";
-import { lightTheme, darkTheme } from "./theme";
-import ActionButtons from "./components/ActionButtons";
+import React from "react";
+import { CssBaseline } from "@mui/material";
+import {
+  ThemeProvider as MuiThemeProvider,
+  createTheme,
+} from "@mui/material/styles";
+import { ThemeProvider } from "./ThemeContext";
+import NavBar from "./components/NavBar";
+import CodeEditor from "./components/CodeEditor";
+import { useTheme } from "./ThemeContext";
 
 const App = () => {
-  const [isDarkMode, setIsDarkMode] = useState(true);
-
-  const toggleTheme = () => {
-    setIsDarkMode((prevMode) => !prevMode);
-  };
-  const [language, setLanguage] = useState("html");
-
-  const handleRunClick = () => {
-    console.log("Run button clicked");
-  };
-
-  const handleFormatClick = () => {
-    console.log("Format button clicked");
-  };
-
-  const handleLanguageChange = (event) => {
-    setLanguage(event.target.value);
-  };
-
   return (
-    <ThemeProvider theme={isDarkMode ? darkTheme : lightTheme}>
-      <CssBaseline />
-      <NabBar toggleTheme={toggleTheme} />
-      <ActionButtons
-        language={language}
-        onRunClick={handleRunClick}
-        onFormatClick={handleFormatClick}
-        onLanguageChange={handleLanguageChange}
-      />
+    <ThemeProvider>
+      <MuiThemeProviderWrapper>
+        <CssBaseline />
+        <NavBar />
+        <CodeEditor />
+      </MuiThemeProviderWrapper>
     </ThemeProvider>
   );
+};
+
+// Wrapper for MUI's ThemeProvider
+const MuiThemeProviderWrapper = ({ children }) => {
+  const { isDarkMode } = useTheme();
+  const theme = createTheme({
+    palette: {
+      mode: isDarkMode ? "dark" : "light",
+    },
+  });
+
+  return <MuiThemeProvider theme={theme}>{children}</MuiThemeProvider>;
 };
 
 export default App;
