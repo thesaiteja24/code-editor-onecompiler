@@ -9,22 +9,37 @@ import { useTheme } from "../ThemeContext";
 
 const CodeEditor = () => {
   const { isDarkMode } = useTheme();
-  const [code, setCode] = useState(
-    () => localStorage.getItem("editorCode") || ""
-  );
   const confetti = new JSConfetti();
 
-  const handleRunCode = () => {};
+  const handleRunCode = () => {
+    const iframe = document.getElementById("code-editor");
+    iframe.contentWindow.postMessage(
+      {
+        eventType: "triggerRun",
+      },
+      "*"
+    );
+  };
+
+  const handleLoadCode = () => {
+    setTimeout(() => {
+      const savedCode = JSON.parse(localStorage.getItem("saved-code"));
+      console.log(savedCode);
+      const iframe = document.getElementById("code-editor");
+      iframe.contentWindow.postMessage(
+        {
+          eventType: "populateCode",
+          language: savedCode.language,
+          files: savedCode.files,
+        },
+        "*"
+      );
+    }, 100);
+  };
 
   const handleFormatCode = () => {
     // Format code logic
   };
-
-  const theme = createTheme({
-    palette: {
-      mode: isDarkMode ? "dark" : "light",
-    },
-  });
 
   window.onmessage = function (e) {
     // Save data on every key stroke
@@ -38,6 +53,12 @@ const CodeEditor = () => {
       confetti.addConfetti();
     }
   };
+
+  const theme = createTheme({
+    palette: {
+      mode: isDarkMode ? "dark" : "light",
+    },
+  });
 
   return (
     <MuiThemeProvider theme={theme}>
@@ -80,10 +101,11 @@ const CodeEditor = () => {
             <iframe
               id="code-editor"
               title="OneCompiler Editor"
-              src={`https://onecompiler.com/embed/python?codeChangeEvent=true&listenToEvents=true&theme=${
+              src={`https://onecompiler.com/embed/?hideRun=true&codeChangeEvent=true&listenToEvents=true&theme=${
                 isDarkMode ? "dark" : "light"
               }`}
               style={{ width: "100%", height: "80vh" }}
+              onLoad={handleLoadCode}
             />
           </Box>
         </Box>
