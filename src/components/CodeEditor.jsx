@@ -14,13 +14,7 @@ const CodeEditor = () => {
   );
   const confetti = new JSConfetti();
 
-  useEffect(() => {
-    localStorage.setItem("editorCode", code);
-  }, [code]);
-
-  const handleRunCode = () => {
-    confetti.addConfetti();
-  };
+  const handleRunCode = () => {};
 
   const handleFormatCode = () => {
     // Format code logic
@@ -31,6 +25,19 @@ const CodeEditor = () => {
       mode: isDarkMode ? "dark" : "light",
     },
   });
+
+  window.onmessage = function (e) {
+    // Save data on every key stroke
+    if (e.data && e.data.language) {
+      console.log(e.data);
+      localStorage.setItem("saved-code", JSON.stringify(e.data));
+    }
+
+    // Confetti animation on successful execution
+    if (e.data && e.data.action === "runComplete") {
+      confetti.addConfetti();
+    }
+  };
 
   return (
     <MuiThemeProvider theme={theme}>
@@ -53,7 +60,7 @@ const CodeEditor = () => {
             <Button
               variant="contained"
               sx={{
-                width: { xs: "100%", md: "auto" }, // Full width on mobile, auto width on larger screens
+                width: { xs: "100%", md: "auto" },
               }}
               onClick={handleRunCode}
             >
@@ -62,7 +69,7 @@ const CodeEditor = () => {
             <Button
               variant="outlined"
               sx={{
-                width: { xs: "100%", md: "auto" }, // Full width on mobile, auto width on larger screens
+                width: { xs: "100%", md: "auto" },
               }}
               onClick={handleFormatCode}
             >
@@ -73,7 +80,7 @@ const CodeEditor = () => {
             <iframe
               id="code-editor"
               title="OneCompiler Editor"
-              src={`https://onecompiler.com/embed/python?theme=${
+              src={`https://onecompiler.com/embed/python?codeChangeEvent=true&listenToEvents=true&theme=${
                 isDarkMode ? "dark" : "light"
               }`}
               style={{ width: "100%", height: "80vh" }}
