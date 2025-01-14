@@ -44,12 +44,16 @@ const CodeEditor = () => {
   window.onmessage = function (e) {
     // Save data on every key stroke
     if (e.data && e.data.language) {
-      console.log(e.data);
+      console.log(e.data.result);
       localStorage.setItem("saved-code", JSON.stringify(e.data));
     }
 
     // Confetti animation on successful execution
-    if (e.data && e.data.action === "runComplete") {
+    if (
+      e.data &&
+      e.data.action === "runComplete" &&
+      e.data.result.success === true
+    ) {
       confetti.addConfetti();
     }
   };
