@@ -24,7 +24,6 @@ const CodeEditor = () => {
   const handleLoadCode = () => {
     setTimeout(() => {
       const savedCode = JSON.parse(localStorage.getItem("saved-code"));
-      console.log(savedCode);
       const iframe = document.getElementById("code-editor");
       iframe.contentWindow.postMessage(
         {
@@ -44,7 +43,6 @@ const CodeEditor = () => {
   window.onmessage = function (e) {
     // Save data on every key stroke
     if (e.data && e.data.language) {
-      console.log(e.data.result);
       localStorage.setItem("saved-code", JSON.stringify(e.data));
     }
 
