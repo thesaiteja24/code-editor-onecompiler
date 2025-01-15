@@ -1,12 +1,13 @@
 export const formatCode = async (code, language) => {
   try {
     // Load Prettier and necessary plugins dynamically
-    const [prettier, prettierBabel, prettierEstree, prettierHtml] =
+    const [prettier, prettierBabel, prettierEstree, prettierHtml, prettierCss] =
       await Promise.all([
         import("https://unpkg.com/prettier@3.4.2/standalone.mjs"),
         import("https://unpkg.com/prettier@3.4.2/plugins/babel.mjs"),
         import("https://unpkg.com/prettier@3.4.2/plugins/estree.mjs"),
         import("https://unpkg.com/prettier@3.4.2/plugins/html.mjs"),
+        import("https://unpkg.com/prettier@3.4.2/plugins/postcss.mjs"),
       ]);
 
     // Determine the parser and plugins based on the language
@@ -23,6 +24,10 @@ export const formatCode = async (code, language) => {
       case "html":
         parser = "html";
         plugins = [prettierHtml.default];
+        break;
+      case "css":
+        parser = "css";
+        plugins = [prettierCss.default];
         break;
       default:
         throw new Error(`Unsupported language: ${language}`);

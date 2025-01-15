@@ -39,28 +39,42 @@ const CodeEditor = () => {
 
   const handleFormatCode = async () => {
     try {
+      // Retrieve the saved code from localStorage
       const savedCode = JSON.parse(localStorage.getItem("saved-code"));
 
-      if (!savedCode?.files?.[0]?.content) {
+      // Check if the code is available
+      if (!savedCode?.files?.length) {
         console.error("No code found in localStorage.");
         return;
       }
 
-      const code = savedCode.files[0].content;
-      const language = savedCode.language;
+      // Iterate over all the files in the savedCode object
+      for (let i = 0; i < savedCode.files.length; i++) {
+        console.log(i);
+        const code = savedCode.files[i].content;
+        let language = savedCode.language;
+        const extension = savedCode.files[i].name;
+        console.log(extension);
+        if (extension.includes(".css")) {
+          language = "css";
+        } else if (extension.includes(".js")) {
+          language = "javascript";
+        }
 
-      const formattedCode = await formatCode(code, language);
+        // Format the code
+        const formattedCode = await formatCode(code, language);
 
-      // Update the formatted code in the files array
-      savedCode.files[0].content = formattedCode;
+        // Update the formatted code in the files array
+        savedCode.files[i].content = formattedCode;
+      }
 
       // Send the updated code to the iframe
       const iframe = document.getElementById("code-editor");
       iframe.contentWindow.postMessage(
         {
           eventType: "populateCode",
-          language: language,
-          files: savedCode.files,
+          language: savedCode.language, // Send the language from savedCode
+          files: savedCode.files, // Send the updated files with formatted code
         },
         "*"
       );
