@@ -20,6 +20,8 @@
     "axios": "^1.7.9",
     "js-confetti": "^0.12.0",
     "lucide-react": "^0.471.0",
+    "prettier": "^3.4.2",
+    "prettier-plugin-java": "^2.6.6",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },

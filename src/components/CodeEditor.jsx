@@ -6,6 +6,7 @@ import {
 import { Box, Button, CssBaseline, Paper } from "@mui/material";
 import JSConfetti from "js-confetti";
 import { useTheme } from "../ThemeContext";
+import { formatCode } from "../utils/codeFormatter";
 
 const CodeEditor = () => {
   const { isDarkMode } = useTheme();
@@ -36,8 +37,38 @@ const CodeEditor = () => {
     }, 100);
   };
 
-  const handleFormatCode = () => {
-    // Format code logic
+  const handleFormatCode = async () => {
+    try {
+      const savedCode = JSON.parse(localStorage.getItem("saved-code"));
+
+      if (!savedCode?.files?.[0]?.content) {
+        console.error("No code found in localStorage.");
+        return;
+      }
+
+      const code = savedCode.files[0].content;
+      const language = savedCode.language;
+
+      const formattedCode = await formatCode(code, language);
+
+      // Update the formatted code in the files array
+      savedCode.files[0].content = formattedCode;
+
+      // Send the updated code to the iframe
+      const iframe = document.getElementById("code-editor");
+      iframe.contentWindow.postMessage(
+        {
+          eventType: "populateCode",
+          language: language,
+          files: savedCode.files,
+        },
+        "*"
+      );
+
+      console.log("Code formatted successfully.");
+    } catch (error) {
+      console.error("Error formatting code:", error);
+    }
   };
 
   window.onmessage = function (e) {
